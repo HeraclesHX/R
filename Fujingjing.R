@@ -1,4 +1,5 @@
 require(xlsx)
+require(reshape)
 
 getwd()
 setwd("/Users/Xin/Desktop")
@@ -55,6 +56,7 @@ data2 = cbind(Getup_Pressure_1, Getup_Pressure_2, Morning_Pressure_1, Morning_Pr
               AfterNoon_Pressure_1, AfterNoon_Pressure_2, Night_Pressure_1,Night_Pressure_2)
 
 data_m = cbind(data[,1:11], data2)
+
 # data_m = as.data.frame(data_m)
 # is.data.frame(data_m)
 # write.xlsx2(data_m, "data_m.xlsx", sheetName="Sheet1", 
@@ -63,5 +65,19 @@ data_m = cbind(data[,1:11], data2)
 pf_prod = c("络活喜","苯磺酸氨氯他平")
 
 strsplit(data$Drugs[1], "，")
+strsplit(data$Drugs, "，")[[1:2]] %in% pf_prod
 
-logic = any(strsplit(data$Drugs, "，")[[1]] %in% pf_prod)
+logic = function(x){
+   any(x %in% pf_prod)
+}
+
+criteria = lapply(strsplit(data$Drugs, "，"), logic)
+criteria[[2]]
+
+criteria1 = unlist(criteria)
+table(criteria1)
+
+# For Pfizer's Products
+
+
+tgt = subset(data_m[criteria1,], Getup_Pressure_1 <= 135 & Getup_Pressure_2 >= 85)
