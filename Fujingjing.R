@@ -1,5 +1,7 @@
 require(xlsx)
 require(reshape)
+require(reshape2)
+
 
 getwd()
 setwd("/Users/Xin/Desktop")
@@ -62,7 +64,7 @@ data_m = cbind(data[,1:11], data2)
 # write.xlsx2(data_m, "data_m.xlsx", sheetName="Sheet1", 
 #            col.names=TRUE)
 
-pf_prod = c("络活喜","苯磺酸氨氯他平")
+pf_prod = c("络活喜","苯磺酸氨氯地平")
 
 strsplit(data$Drugs[1], "，")
 strsplit(data$Drugs, "，")[[1:2]] %in% pf_prod
@@ -78,6 +80,28 @@ criteria1 = unlist(criteria)
 table(criteria1)
 
 # For Pfizer's Products
+tgt = subset(data_m[criteria1,], Getup_Pressure_1 <= 135 & Getup_Pressure_2 <= 85)
+
+threeDays = function(tmp){
+  string = paste(tmp, sep = "", collapse = "")
+  return(string)
+}
+
+logic_v = data_m[,c("Getup_Pressure_1", "Getup_Pressure_2") ]
+indicator = as.numeric(with(logic_v, Getup_Pressure_1 >= 135 | Getup_Pressure_2 >= 85))
+tgt1 = cbind(data_m[,1:11], indicator)
+
+#get the function which executes the three days criateria
+
+threeDays = function(tmp){
+  string = paste(tmp, sep = "", collapse = "")
+  return(string)
+}
+
+#Now, we apply the the aggregate function. It is very useful in the reshape the data
+
+tgt2 = aggregate(indicator ~ ., data = tgt1, "threeDays")
 
 
-tgt = subset(data_m[criteria1,], Getup_Pressure_1 <= 135 & Getup_Pressure_2 >= 85)
+
+
