@@ -1,3 +1,4 @@
+install.packages("reshape2")
 require(xlsx)
 require(reshape)
 require(reshape2)
@@ -88,7 +89,7 @@ threeDays = function(tmp){
 }
 
 logic_v = data_m[,c("Getup_Pressure_1", "Getup_Pressure_2") ]
-indicator = as.numeric(with(logic_v, Getup_Pressure_1 >= 135 | Getup_Pressure_2 >= 85))
+indicator = as.numeric(with(logic_v, Getup_Pressure_1 <= 135 | Getup_Pressure_2 >= 85))
 tgt1 = cbind(data_m[,1:11], indicator)
 
 #get the function which executes the three days criateria
@@ -100,7 +101,7 @@ threeDays = function(tmp){
 
 #Now, we apply the the aggregate function. It is very useful in the reshape the data
 
-tgt2 = aggregate(indicator ~ ., data = tgt1, "threeDays")
+tgt2 = aggregate(indicator ~ Name, data = tgt1, "threeDays")
 
 
 
