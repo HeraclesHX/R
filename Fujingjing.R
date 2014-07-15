@@ -1,7 +1,9 @@
-install.packages("reshape2")
+#install.packages("reshape2")
+install.packages("ggplot2")
 require(xlsx)
 require(reshape2)
-
+require(stringr)
+require(ggplot2)
 
 getwd()
 setwd("/Users/Xin/Desktop")
@@ -88,13 +90,30 @@ threeDays = function(tmp){
 }
 
 logic_v = data_m[,c("Getup_Pressure_1", "Getup_Pressure_2") ]
-indicator = as.numeric(with(logic_v, Getup_Pressure_1 <= 135 | Getup_Pressure_2 >= 85))
+indicator = as.numeric(with(logic_v, Getup_Pressure_1 <= 135 & Getup_Pressure_2 <= 85))
 tgt1 = cbind(data_m[,1:11], indicator)
 
 
 #Now, we apply the the aggregate function. It is very useful in the reshape the data
 
 tgt2 = aggregate(indicator ~ Name, data = tgt1, "threeDays")
+normal_flag = str_detect(tgt2[,2], "111")
+
+tgt2 = cbind(tgt2, normal_flag)
+
+demogra = tgt1[,c("Name", "Age", "Sex", "Drugs")]
+demogra = unique.data.frame(demogra)
+
+drug_flag = str_detect(demogra[,4], "络活喜")
+
+demogra = cbind(demogra, drug_flag)
+
+final_data = merge.data.frame(demogra, tgt2, by.x = "Name", 
+                               by.y = "Name")
+
+
+
+
 
 
 
