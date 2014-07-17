@@ -1,9 +1,13 @@
 install.packages("xlsx")
 install.packages("stringr")
 install.packages("randomForest")
+install.packages("mboost")
+install.packages("party")
 require(xlsx)
 require(stringr)
 require(randomForest)
+require(mboost)
+require(party)
 
 getwd()
 setwd("/Users/Xin/Desktop")
@@ -86,5 +90,25 @@ for.mse.r = merge(raw.data.final.f[,c(1, 2)], test.predict,
 
 mse.rf = mean((for.mse.r[["y"]] - for.mse.r[["Predict"]])^2) # Mean Square Error = 47.03287, the less the better#
 rsq.rf = 1 - mse.rf/var(for.mse.r[["y"]]) # Pseduo R Square = 0.31, the larger the better #
+
+##########################################
+#      run the boosting model            #
+##########################################
+
+# leave one out cross validation for the count of observations is small #
+
+time = length(raw.data.final.f[,1])
+w = raw.data.final.f
+NMSE=rep(0,time); MSE = NMSE
+formula = as.formula(paste("y ~ ", paste("btree", "(", "x", seq(1, 22), ")", 
+                                         sep = "", collapse = " + ")))
+for(i in 1:time){
+  B1=mboost(formula,data =w[-i,])
+#   y0=predict(B1,w[-i,])
+  y1=predict(B1,w[i,])
+  NMSE[i]=mean((w$y[i]-y1)^2)/mean((w$y[i]-mean(w$y[i]))^2)
+  MSE[i]=mean((w$y[i]-y1)^2)
+}
+MMSE=mean(MSE) # MSE 61.47523 #
 
 
