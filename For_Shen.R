@@ -6,7 +6,9 @@ require(stringr)
 getwd()
 setwd("/Users/Xin/Desktop")
 
-raw.data.independent = read.xlsx("数据.xls",sheetName = "自变量")
+# Phase I: Generate the data for boosting and random forest models #
+
+raw.data.independent = read.xlsx("数据.xls",sheetName = "自")
 raw.data.dependent = read.xlsx("数据.xls",sheetName = "因变量")
 
 
@@ -46,3 +48,5 @@ colnames(raw.data.final)[2] = "通讯器材类同比"
 str(raw.data.final)
 
 raw.data.final[,-1] = as.numeric(raw.data.final[,-1])
+
+# run the random forest model#
